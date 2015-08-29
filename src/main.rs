@@ -1,7 +1,9 @@
 extern crate num;
-
 use num::FromPrimitive;
 use num::bigint::BigInt;
+
+extern crate clap;
+use clap::{Arg, App};
 
 use std::collections::HashSet;
 
@@ -103,9 +105,26 @@ fn print_nums(before: &str, numbers: &Vec<BigInt>) {
 }
 
 fn main() {
-    let max_num = 10_000;
-    let max_tests = 500;
+    let args = App::new("Lychrels")
+    .version("0.1")
+    .author("monsieursquirrel")
+    .about("Finds lychrel numbers in a given range.")
+    .arg(Arg::with_name("RANGE")
+        .help("Sets the maximum limit of the range to be serached")
+        .required(false)
+        .takes_value(true)
+        .validator(|value| value.parse::<u64>().map(|_| () ).map_err(|_| "not a number".to_owned() ))
+        .long("range"))
+    .arg(Arg::with_name("TESTS")
+        .help("Sets the maximum number of tests performed on each number")
+        .required(false)
+        .takes_value(true)
+        .validator(|value| value.parse::<usize>().map(|_| () ).map_err(|_| "not a number".to_owned() ))
+        .long("tests"))
+    .get_matches();
 
+    let max_num: u64 = args.value_of("RANGE").and_then(|arg_str| arg_str.parse().ok() ).unwrap_or(10_000);
+    let max_tests: usize = args.value_of("TESTS").and_then(|arg_str| arg_str.parse().ok() ).unwrap_or(500);
 
     println!("Calculations using n = 1..{} and limiting each search to {} reverse-digits-and-adds",
         max_num, max_tests);
