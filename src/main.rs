@@ -14,6 +14,18 @@ fn is_palindrome(num: u64) -> bool {
     num_string[0..comp_len] == rev_string[0..comp_len]
 }
 
+/// Perform a lychrel test on a number, stopping after max_tests
+fn test_lychrel(num: u64, max_tests: usize) -> bool {
+    (0..max_tests)
+    .scan(num, |current, _| {
+        *current = rev_add(*current);
+        Some(*current)
+    })
+    .filter(|curent| is_palindrome(*curent))
+    .next()
+    .is_none()
+}
+
 fn main() {
     println!("Hello, world!");
 }
@@ -41,4 +53,18 @@ fn not_palindromes() {
     assert!(!is_palindrome(21));
     assert!(!is_palindrome(1231));
     assert!(!is_palindrome(124321));
+}
+
+#[test]
+fn expected_lychrels() {
+    assert!(test_lychrel(196, 500));
+    assert!(!test_lychrel(879, 500));
+}
+
+#[test]
+fn expected_non_lychrels() {
+    assert!(!test_lychrel(1, 500));
+    assert!(!test_lychrel(2, 500));
+    assert!(!test_lychrel(3, 500));
+    assert!(!test_lychrel(4, 500));
 }
