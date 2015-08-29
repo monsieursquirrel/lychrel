@@ -74,7 +74,7 @@ fn not_palindromes() {
 #[test]
 fn expected_lychrels() {
     assert!(test_lychrel(&FromPrimitive::from_u64(196).unwrap(), 500).is_some());
-    assert!(test_lychrel(&FromPrimitive::from_u64(196).unwrap(), 500).is_some());
+    assert!(test_lychrel(&FromPrimitive::from_u64(879).unwrap(), 500).is_some());
 }
 
 #[test]
