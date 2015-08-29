@@ -49,29 +49,16 @@ fn is_related(seq: &Vec<BigInt>, lychrel_seq_numbers: &HashSet<BigInt>) -> bool 
     seq.iter().filter(|num| lychrel_seq_numbers.contains(num)).next().is_some()
 }
 
-fn print_nums(before: &str, numbers: &Vec<BigInt>) {
-    print!("{}", before);
-    for (i, current) in numbers.iter().enumerate() {
-        print!("{}", current);
-        if i + 1 < numbers.len() {
-            print!(", ");
-        }
-    }
-    println!("");
-}
-
-fn main() {
+/// Find the lychrel numbers up to max_num (inclusive).
+/// Returns a tuple (lychrel numbers, related numbers, palindrome lychrel/related numbers)
+fn find_lychrels(max_num: u64, max_tests: usize) -> (Vec<BigInt>, Vec<BigInt>, Vec<BigInt>) {
     // storage for various outputs
     let mut lychrels = Vec::<BigInt>::new();
-    let mut num_relateds = 0;
+    let mut relateds = Vec::<BigInt>::new();
     let mut palindrome_lychrels = Vec::<BigInt>::new();
 
     let mut lychrel_seq_numbers: HashSet<BigInt> = HashSet::new();
 
-    let max_num = 10_000;
-    let max_tests = 500;
-
-    // this will get prettier if/when the inclusive range rfc is done
     for i in (1..(max_num + 1)) {
         let num = FromPrimitive::from_u64(i).unwrap();
         let maybe_lychrel = test_lychrel(&num, max_tests);
@@ -91,7 +78,7 @@ fn main() {
             }
             else {
                 // just count it as a related number
-                num_relateds += 1;
+                relateds.push(num.clone());
             }
 
             if is_palindrome(&num) {
@@ -101,11 +88,33 @@ fn main() {
         }
     }
 
+    (lychrels, relateds, palindrome_lychrels)
+}
+
+fn print_nums(before: &str, numbers: &Vec<BigInt>) {
+    print!("{}", before);
+    for (i, current) in numbers.iter().enumerate() {
+        print!("{}", current);
+        if i + 1 < numbers.len() {
+            print!(", ");
+        }
+    }
+    println!("");
+}
+
+fn main() {
+    let max_num = 10_000;
+    let max_tests = 500;
+
+
     println!("Calculations using n = 1..{} and limiting each search to {} reverse-digits-and-adds",
         max_num, max_tests);
+
+    let (lychrels, relateds, palindrome_lychrels) = find_lychrels(max_num, max_tests);
+
     println!("Number of Lychrel numbers: {}", lychrels.len());
     print_nums("Lychrel numbers: ", &lychrels);
-    println!("Number of Lychrel related: {}", num_relateds);
+    println!("Number of Lychrel related: {}", relateds.len());
     println!("Number of Lychrel palindromes: {}", palindrome_lychrels.len());
     print_nums("Lychrel palindromes: ", &palindrome_lychrels);
 }
