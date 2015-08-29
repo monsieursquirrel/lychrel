@@ -3,6 +3,8 @@ extern crate num;
 use num::FromPrimitive;
 use num::bigint::BigInt;
 
+use std::collections::HashSet;
+
 /// Reverse a number then add it to the original.
 fn rev_add(num: &BigInt) -> BigInt {
     let rev_string: String = num.to_string().chars().rev().collect();
@@ -23,6 +25,7 @@ fn is_palindrome(num: &BigInt) -> bool {
 /// Returns the sequence of numbers if this number is a lychrel, None otherwise.
 fn test_lychrel(num: &BigInt, max_tests: usize) -> Option<Vec<BigInt>> {
     let mut sequence = Vec::<BigInt>::new();
+
     let is_lychrel = (0..max_tests)
         .scan(num.clone(), |current, _| {
             *current = rev_add(current);
@@ -32,6 +35,7 @@ fn test_lychrel(num: &BigInt, max_tests: usize) -> Option<Vec<BigInt>> {
         .filter(|curent| is_palindrome(curent))
         .next()
         .is_none();
+
     if is_lychrel {
         Some(sequence)
     }
@@ -40,8 +44,45 @@ fn test_lychrel(num: &BigInt, max_tests: usize) -> Option<Vec<BigInt>> {
     }
 }
 
+/// Determine if the sequence for a lychrel number is related to a previously seen sequence
+fn is_related(seq: &Vec<BigInt>, lychrel_seq_numbers: &HashSet<BigInt>) -> bool {
+    seq.iter().filter(|num| lychrel_seq_numbers.contains(num)).next().is_some()
+}
+
 fn main() {
-    println!("Hello, world!");
+    // storage for various outputs
+    let mut lychrels = Vec::<BigInt>::new();
+    let mut num_relateds = 0;
+    let mut palindrome_lychrels = Vec::<BigInt>::new();
+
+    let mut lychrel_seq_numbers: HashSet<BigInt> = HashSet::new();
+
+    let num = FromPrimitive::from_u64(196).unwrap();
+    let maybe_lychrel = test_lychrel(&num, 500);
+
+    if let Some(lychrel_seq) = maybe_lychrel {
+        // it's a lychrel - check if it's a related number
+        let related = is_related(&lychrel_seq, &lychrel_seq_numbers);
+
+        // update our sequences
+        for seq_num in lychrel_seq.into_iter() {
+            lychrel_seq_numbers.insert(seq_num);
+        }
+
+        if !related {
+            // the number has a new lychrel sequence, store it
+            lychrels.push(num.clone());
+        }
+        else {
+            // just count it as a related number
+            num_relateds += 1;
+        }
+
+        if is_palindrome(&num) {
+            // doesn't matter if palindromes are related or not
+            palindrome_lychrels.push(num.clone());
+        }
+    }
 }
 
 
