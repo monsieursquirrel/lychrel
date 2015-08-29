@@ -1,13 +1,18 @@
+extern crate num;
+
+use num::FromPrimitive;
+use num::bigint::BigInt;
+
 /// Reverse a number then add it to the original
-fn rev_add(num: u64) -> u64 {
+fn rev_add(num: &BigInt) -> BigInt {
     let rev_string: String = num.to_string().chars().rev().collect();
     // should be safe, our string is guaranteed to be a number
-    let rev_val: u64 = rev_string.parse().unwrap();
+    let rev_val: BigInt = rev_string.parse().unwrap();
     num + rev_val
 }
 
 /// Check if a number is a palindrome when written in base 10
-fn is_palindrome(num: u64) -> bool {
+fn is_palindrome(num: &BigInt) -> bool {
     let num_string = num.to_string();
     let rev_string: String = num_string.chars().rev().collect();
     let comp_len = num_string.len() / 2;
@@ -16,12 +21,13 @@ fn is_palindrome(num: u64) -> bool {
 
 /// Perform a lychrel test on a number, stopping after max_tests
 fn test_lychrel(num: u64, max_tests: usize) -> bool {
+    let num = FromPrimitive::from_u64(num).unwrap();
     (0..max_tests)
     .scan(num, |current, _| {
-        *current = rev_add(*current);
-        Some(*current)
+        *current = rev_add(current);
+        Some(current.clone())
     })
-    .filter(|curent| is_palindrome(*curent))
+    .filter(|curent| is_palindrome(curent))
     .next()
     .is_none()
 }
@@ -33,32 +39,32 @@ fn main() {
 
 #[test]
 fn simple_rev_adds() {
-    assert!(rev_add(1) == 2);
-    assert!(rev_add(12) == 33);
-    assert!(rev_add(55) == 110);
-    assert!(rev_add(123) == 444);
+    assert!(rev_add(&FromPrimitive::from_u64(1).unwrap()) == FromPrimitive::from_u64(2).unwrap());
+    assert!(rev_add(&FromPrimitive::from_u64(12).unwrap()) == FromPrimitive::from_u64(33).unwrap());
+    assert!(rev_add(&FromPrimitive::from_u64(55).unwrap()) == FromPrimitive::from_u64(110).unwrap());
+    assert!(rev_add(&FromPrimitive::from_u64(123).unwrap()) == FromPrimitive::from_u64(444).unwrap());
 }
 
 #[test]
 fn simple_palindromes() {
-    assert!(is_palindrome(1));
-    assert!(is_palindrome(11));
-    assert!(is_palindrome(121));
-    assert!(is_palindrome(12321));
+    assert!(is_palindrome(&FromPrimitive::from_u64(1).unwrap()) );
+    assert!(is_palindrome(&FromPrimitive::from_u64(11).unwrap()));
+    assert!(is_palindrome(&FromPrimitive::from_u64(121).unwrap()));
+    assert!(is_palindrome(&FromPrimitive::from_u64(12321).unwrap()));
 }
 
 #[test]
 fn not_palindromes() {
-    assert!(!is_palindrome(12));
-    assert!(!is_palindrome(21));
-    assert!(!is_palindrome(1231));
-    assert!(!is_palindrome(124321));
+    assert!(!is_palindrome(&FromPrimitive::from_u64(12).unwrap()));
+    assert!(!is_palindrome(&FromPrimitive::from_u64(21).unwrap()));
+    assert!(!is_palindrome(&FromPrimitive::from_u64(1231).unwrap()));
+    assert!(!is_palindrome(&FromPrimitive::from_u64(124321).unwrap()));
 }
 
 #[test]
 fn expected_lychrels() {
     assert!(test_lychrel(196, 500));
-    assert!(!test_lychrel(879, 500));
+    assert!(test_lychrel(879, 500));
 }
 
 #[test]

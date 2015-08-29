@@ -2,3 +2,6 @@
 name = "lychrel"
 version = "0.1.0"
 authors = ["monsieursquirrel <conrad@bebbington.org>"]
+
+[dependencies]
+num = "0.1.27"
