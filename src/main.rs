@@ -49,6 +49,17 @@ fn is_related(seq: &Vec<BigInt>, lychrel_seq_numbers: &HashSet<BigInt>) -> bool 
     seq.iter().filter(|num| lychrel_seq_numbers.contains(num)).next().is_some()
 }
 
+fn print_nums(before: &str, numbers: &Vec<BigInt>) {
+    print!("{}", before);
+    for (i, current) in numbers.iter().enumerate() {
+        print!("{}", current);
+        if i + 1 < numbers.len() {
+            print!(", ");
+        }
+    }
+    println!("");
+}
+
 fn main() {
     // storage for various outputs
     let mut lychrels = Vec::<BigInt>::new();
@@ -57,7 +68,7 @@ fn main() {
 
     let mut lychrel_seq_numbers: HashSet<BigInt> = HashSet::new();
 
-    let max_num = 10000;
+    let max_num = 10_000;
     let max_tests = 500;
 
     // this will get prettier if/when the inclusive range rfc is done
@@ -93,10 +104,10 @@ fn main() {
     println!("Calculations using n = 1..{} and limiting each search to {} reverse-digits-and-adds",
         max_num, max_tests);
     println!("Number of Lychrel numbers: {}", lychrels.len());
-    println!("Lychrel numbers: {:?}", lychrels);
+    print_nums("Lychrel numbers: ", &lychrels);
     println!("Number of Lychrel related: {}", num_relateds);
     println!("Number of Lychrel palindromes: {}", palindrome_lychrels.len());
-    println!("Lychrel palindromes: {:?}", palindrome_lychrels);
+    print_nums("Lychrel palindromes: ", &palindrome_lychrels);
 }
 
 
