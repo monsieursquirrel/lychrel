@@ -57,32 +57,46 @@ fn main() {
 
     let mut lychrel_seq_numbers: HashSet<BigInt> = HashSet::new();
 
-    let num = FromPrimitive::from_u64(196).unwrap();
-    let maybe_lychrel = test_lychrel(&num, 500);
+    let max_num = 10000;
+    let max_tests = 500;
 
-    if let Some(lychrel_seq) = maybe_lychrel {
-        // it's a lychrel - check if it's a related number
-        let related = is_related(&lychrel_seq, &lychrel_seq_numbers);
+    // this will get prettier if/when the inclusive range rfc is done
+    for i in (1..(max_num + 1)) {
+        let num = FromPrimitive::from_u64(i).unwrap();
+        let maybe_lychrel = test_lychrel(&num, max_tests);
 
-        // update our sequences
-        for seq_num in lychrel_seq.into_iter() {
-            lychrel_seq_numbers.insert(seq_num);
-        }
+        if let Some(lychrel_seq) = maybe_lychrel {
+            // it's a lychrel - check if it's a related number
+            let related = is_related(&lychrel_seq, &lychrel_seq_numbers);
 
-        if !related {
-            // the number has a new lychrel sequence, store it
-            lychrels.push(num.clone());
-        }
-        else {
-            // just count it as a related number
-            num_relateds += 1;
-        }
+            // update our sequences
+            for seq_num in lychrel_seq.into_iter() {
+                lychrel_seq_numbers.insert(seq_num);
+            }
 
-        if is_palindrome(&num) {
-            // doesn't matter if palindromes are related or not
-            palindrome_lychrels.push(num.clone());
+            if !related {
+                // the number has a new lychrel sequence, store it
+                lychrels.push(num.clone());
+            }
+            else {
+                // just count it as a related number
+                num_relateds += 1;
+            }
+
+            if is_palindrome(&num) {
+                // doesn't matter if palindromes are related or not
+                palindrome_lychrels.push(num.clone());
+            }
         }
     }
+
+    println!("Calculations using n = 1..{} and limiting each search to {} reverse-digits-and-adds",
+        max_num, max_tests);
+    println!("Number of Lychrel numbers: {}", lychrels.len());
+    println!("Lychrel numbers: {:?}", lychrels);
+    println!("Number of Lychrel related: {}", num_relateds);
+    println!("Number of Lychrel palindromes: {}", palindrome_lychrels.len());
+    println!("Lychrel palindromes: {:?}", palindrome_lychrels);
 }
 
 
