@@ -20,20 +20,20 @@ fn is_palindrome(num: &BigInt) -> bool {
 }
 
 /// Perform a lychrel test on a number, stopping after max_tests
-/// Returns the sequence of related numbers if this number is a lychrel, None otherwise.
+/// Returns the sequence of numbers if this number is a lychrel, None otherwise.
 fn test_lychrel(num: &BigInt, max_tests: usize) -> Option<Vec<BigInt>> {
-    let mut related = Vec::<BigInt>::new();
+    let mut sequence = Vec::<BigInt>::new();
     let is_lychrel = (0..max_tests)
         .scan(num.clone(), |current, _| {
             *current = rev_add(current);
             Some(current.clone())
         })
-        .inspect(|current| related.push(current.clone()))
+        .inspect(|current| sequence.push(current.clone()))
         .filter(|curent| is_palindrome(curent))
         .next()
         .is_none();
     if is_lychrel {
-        Some(related)
+        Some(sequence)
     }
     else {
         None
