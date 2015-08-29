@@ -3,7 +3,7 @@ extern crate num;
 use num::FromPrimitive;
 use num::bigint::BigInt;
 
-/// Reverse a number then add it to the original
+/// Reverse a number then add it to the original.
 fn rev_add(num: &BigInt) -> BigInt {
     let rev_string: String = num.to_string().chars().rev().collect();
     // should be safe, our string is guaranteed to be a number
@@ -11,7 +11,7 @@ fn rev_add(num: &BigInt) -> BigInt {
     num + rev_val
 }
 
-/// Check if a number is a palindrome when written in base 10
+/// Check if a number is a palindrome when written in base 10.
 fn is_palindrome(num: &BigInt) -> bool {
     let num_string = num.to_string();
     let rev_string: String = num_string.chars().rev().collect();
@@ -20,16 +20,25 @@ fn is_palindrome(num: &BigInt) -> bool {
 }
 
 /// Perform a lychrel test on a number, stopping after max_tests
-fn test_lychrel(num: u64, max_tests: usize) -> bool {
+/// Returns the sequence of related numbers if this number is a lychrel, None otherwise.
+fn test_lychrel(num: u64, max_tests: usize) -> Option<Vec<BigInt>> {
     let num = FromPrimitive::from_u64(num).unwrap();
-    (0..max_tests)
-    .scan(num, |current, _| {
-        *current = rev_add(current);
-        Some(current.clone())
-    })
-    .filter(|curent| is_palindrome(curent))
-    .next()
-    .is_none()
+    let mut related = Vec::<BigInt>::new();
+    let is_lychrel = (0..max_tests)
+        .scan(num, |current, _| {
+            *current = rev_add(current);
+            Some(current.clone())
+        })
+        .inspect(|current| related.push(current.clone()))
+        .filter(|curent| is_palindrome(curent))
+        .next()
+        .is_none();
+    if is_lychrel {
+        Some(related)
+    }
+    else {
+        None
+    }
 }
 
 fn main() {
@@ -63,14 +72,14 @@ fn not_palindromes() {
 
 #[test]
 fn expected_lychrels() {
-    assert!(test_lychrel(196, 500));
-    assert!(test_lychrel(879, 500));
+    assert!(test_lychrel(196, 500).is_some());
+    assert!(test_lychrel(879, 500).is_some());
 }
 
 #[test]
 fn expected_non_lychrels() {
-    assert!(!test_lychrel(1, 500));
-    assert!(!test_lychrel(2, 500));
-    assert!(!test_lychrel(3, 500));
-    assert!(!test_lychrel(4, 500));
+    assert!(test_lychrel(1, 500).is_none());
+    assert!(test_lychrel(2, 500).is_none());
+    assert!(test_lychrel(3, 500).is_none());
+    assert!(test_lychrel(4, 500).is_none());
 }
