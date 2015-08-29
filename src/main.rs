@@ -21,11 +21,10 @@ fn is_palindrome(num: &BigInt) -> bool {
 
 /// Perform a lychrel test on a number, stopping after max_tests
 /// Returns the sequence of related numbers if this number is a lychrel, None otherwise.
-fn test_lychrel(num: u64, max_tests: usize) -> Option<Vec<BigInt>> {
-    let num = FromPrimitive::from_u64(num).unwrap();
+fn test_lychrel(num: &BigInt, max_tests: usize) -> Option<Vec<BigInt>> {
     let mut related = Vec::<BigInt>::new();
     let is_lychrel = (0..max_tests)
-        .scan(num, |current, _| {
+        .scan(num.clone(), |current, _| {
             *current = rev_add(current);
             Some(current.clone())
         })
@@ -59,7 +58,9 @@ fn simple_palindromes() {
     assert!(is_palindrome(&FromPrimitive::from_u64(1).unwrap()) );
     assert!(is_palindrome(&FromPrimitive::from_u64(11).unwrap()));
     assert!(is_palindrome(&FromPrimitive::from_u64(121).unwrap()));
+    assert!(is_palindrome(&FromPrimitive::from_u64(1221).unwrap()));
     assert!(is_palindrome(&FromPrimitive::from_u64(12321).unwrap()));
+    assert!(is_palindrome(&FromPrimitive::from_u64(123321).unwrap()));
 }
 
 #[test]
@@ -72,14 +73,14 @@ fn not_palindromes() {
 
 #[test]
 fn expected_lychrels() {
-    assert!(test_lychrel(196, 500).is_some());
-    assert!(test_lychrel(879, 500).is_some());
+    assert!(test_lychrel(&FromPrimitive::from_u64(196).unwrap(), 500).is_some());
+    assert!(test_lychrel(&FromPrimitive::from_u64(196).unwrap(), 500).is_some());
 }
 
 #[test]
 fn expected_non_lychrels() {
-    assert!(test_lychrel(1, 500).is_none());
-    assert!(test_lychrel(2, 500).is_none());
-    assert!(test_lychrel(3, 500).is_none());
-    assert!(test_lychrel(4, 500).is_none());
+    assert!(test_lychrel(&FromPrimitive::from_u64(1).unwrap(), 500).is_none());
+    assert!(test_lychrel(&FromPrimitive::from_u64(2).unwrap(), 500).is_none());
+    assert!(test_lychrel(&FromPrimitive::from_u64(3).unwrap(), 500).is_none());
+    assert!(test_lychrel(&FromPrimitive::from_u64(4).unwrap(), 500).is_none());
 }
